@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ふれあい掲示板</title>
+</head>
+<body>
+新規アカウント登録<br/>
+<br/>
+
+<form method="post" name="user_add" action="user_add_post.php" onsubmit="return checkUserInfo()">
+ユーザー名 <div id="rename"></div>
+<input type="text" name="name" style="width:200px"> <br/>
+パスワードを入力してください。<div id="repass1"></div> 
+<input type="password" name="pass" style="width:200px"> <br/>
+もう一度パスワードを入力してください。<div id="repass2"></div>
+<input type="password" name="pass2" style="width:200px"><br/>
+<br/>
+<input type="submit" value="OK">
+<input type="button" onclick="history.back()" value="戻る">
+
+<script>
+function checkUserInfo()
+{
+	var name = document.user_add.name.value;
+	var pass1 = document.user_add.pass.value;
+	var pass2 = document.user_add.pass2.value;
+	var name_len = name.length;
+	var pass1_len = pass1.length;
+
+if(name=='')
+{
+	document.getElementById("rename").innerText = "ユーザー名が入力されていません。";
+	return false;
+}
+else if(name_len >= 31)
+{
+	document.getElementById("rename").innerText = "30字以内で入力してください。";
+	return false;
+}
+else if(name.length != Array.from(name).length)
+{
+	document.getElementById("rename").innerText = "不正な値が入力されています。";
+	return false;
+}
+
+else if(pass1=='')
+{
+	document.getElementById("repass1").innerText = "パスワードが入力されていません。";
+	return false;
+}
+else if(pass1_len >= 16)
+{
+	document.getElementById("repass1").innerText = "パスワードは15文字以内で入力してください。";
+	return false;
+}
+else if(pass1.match(/^[A-Za-z0-9]*$/) == false)
+{
+	document.getElementById("repass1").innerText = "パスワードは半角英数字で入力してください。";
+	return false;
+}
+
+else if(pass1!=pass2)
+{
+	document.getElementById("repass2").innerText = "パスワードが一致しません。";
+	return false;
+}
+
+}
+</script>
+
+</form>
+</body>
+</html>

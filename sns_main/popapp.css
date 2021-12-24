@@ -1,0 +1,32 @@
+body {
+      white-space: pre-wrap;
+    }
+table {
+  height: auto;
+}
+    .text {
+      position: relative;
+      text-align: left;
+    }
+    .popapp {
+      display: none;
+      left: 250px;
+      position: absolute;
+      background: #f0f0f0;
+      color: #000000;
+      font-weight: bold;
+    }
+    .popapp:after {
+      position: absolute;
+      width: 0;
+      height: 0;
+      left: 0;
+      bottom: -19px;
+      margin-left: 10px;
+      border-top-color: #f0f0f0;
+      pointer-events: none;
+      content: " ";
+    }
+    .text:hover + .popapp {
+      display: block;
+    }
