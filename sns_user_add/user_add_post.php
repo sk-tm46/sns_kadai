@@ -9,14 +9,14 @@ header("Content-Security-Policy: reflected-xss block");
 require_once('../common/common.php');
 
 $post = sanitize($_POST);
-$bbs_pass = $_POST['pass'];
-$_POST['pass'] = md5($bbs_pass);
+$sns_pass = $_POST['pass'];
+$_POST['pass'] = md5($sns_pass);
 
 $post=$_POST;
-$bbs_name=$post['name'];
-$bbs_pass=$post['pass'];
+$sns_name=$post['name'];
+$sns_pass=$post['pass'];
 
-$dsn = 'mysql:dbname=bbs;host=localhost;charset=utf8';
+$dsn = 'mysql:dbname=sns;host=localhost;charset=utf8';
 $user = 'insertuser';
 $password = '';
 $dbh = new PDO($dsn, $user, $password);
@@ -25,8 +25,8 @@ $dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
 $sql = "INSERT INTO mst_user(name,pass) VALUES (:name,:pass)";
 $stmt = $dbh->prepare($sql);
-$stmt->bindValue(':name', $bbs_name, PDO::PARAM_STR);
-$stmt->bindValue(':pass', $bbs_pass, PDO::PARAM_STR);
+$stmt->bindValue(':name', $sns_name, PDO::PARAM_STR);
+$stmt->bindValue(':pass', $sns_pass, PDO::PARAM_STR);
 $stmt->execute();
 
 $dbh = null;
@@ -35,7 +35,7 @@ $dbh = null;
 http_response_code( 301 ) ;
 
 // リダイレクト
-header( "Location: bbs_post_done.php" ) ;
+header( "Location: sns_post_done.php" ) ;
 exit();
 }
 

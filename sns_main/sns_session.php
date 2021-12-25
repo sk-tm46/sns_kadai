@@ -6,7 +6,7 @@ session_start();
 session_regenerate_id(true);
 header("X-XSS-Protection: 1; mode=block");
 header("Content-Security-Policy: reflected-xss block");
-header( "Location: bbs_main.php" ) ;
+header( "Location: sns_main.php" ) ;
 
 }
 

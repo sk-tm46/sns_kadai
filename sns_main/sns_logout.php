@@ -13,6 +13,6 @@ session_destroy();
 // ステータスコードを出力
 http_response_code( 301 ) ;
 // リダイレクト
-header( "Location: ..\bbs_login\bbs_login.html" ) ;
+header( "Location: ..\sns_login\sns_login.html" ) ;
 exit();
 ?>

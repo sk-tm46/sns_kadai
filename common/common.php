@@ -9,4 +9,10 @@ function sanitize($before)
 	}
 	return $after;
 }
+
+function sanitize_br($str){
+  
+    return nl2br($str);
+
+}
 ?>
