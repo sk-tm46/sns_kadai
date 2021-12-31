@@ -8,41 +8,28 @@ header("Content-Security-Policy: reflected-xss block");
 require_once('../common/common.php');
 
 $post=sanitize($_POST);
+$sns_replyno=$post['replyno'];
 $sns_comment=$post['comment'];
 $sns_photo=$_FILES['photo'];
 
-$search_str = "&gt;&gt;";
-$result = strpos($sns_comment , $search_str);
-$i = $result;
-$sns_replyno = "";
-
-if($result === false)
+if($sns_replyno == null)
 {
-	$sns_replyno = 0;
+	 $sns_replyno = 0;
 }
 else
 {
-	$i = $i + 8;
-	$no = "";
-	while(true)
+	$replyno = mb_convert_kana($sns_replyno, 'n','UTF-8');
+	if(is_numeric($replyno))
 	{
-		//i文字目を取り出す
-		$reply_judg = mb_substr($sns_comment, $i, 1);
-		//数字か判定
-		if(is_numeric($reply_judg))
-		{
-			$no.=$reply_judg;
-			$i = $i + 1;
-		}
-		else
-		{
-			//数字でなくなったら抜ける
-			break;
-		}
+		//数字なら何もしない
 	}
-	$sns_replyno = $no;
+	else
+	{
+		print "数字を入力してください。";
+		print '<a href="sns_main.php">メイン画面に戻る</a><br/>';
+		exit();
+	}
 }
-
 
 if( $sns_photo != null)
 {
@@ -61,10 +48,12 @@ $dbh = new PDO($dsn, $user, $password);
 $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
-$sql = 'INSERT INTO mst_sns(comment,image) VALUES (:comment,:photo)';
+$sql = 'INSERT INTO mst_sns(comment,image,replyno,user_id) VALUES (:comment,:photo,:replyno,:user_id)';
 $stmt = $dbh->prepare($sql);
 $stmt->bindValue(':comment', $sns_comment, PDO::PARAM_STR);
 $stmt->bindValue(':photo', $sns_photo, PDO::PARAM_STR);
+$stmt->bindValue(':replyno', $sns_replyno, PDO::PARAM_INT);
+$stmt->bindValue(':user_id', $_SESSION['member_login'], PDO::PARAM_INT);
 $stmt->execute();
 
 $dbh = null;
@@ -72,13 +61,12 @@ $dbh = null;
 // ステータスコードを出力
 http_response_code( 301 ) ;
 // リダイレクト
-header( "Location: sns_main.php" ) ;
+header( "Location: sns_main.php" );
 exit();
 }
 
 catch (Exception $e)
 {
-	print $e;
 	print 'ただいま障害により大変ご迷惑をお掛けしております。';
 	exit();
 }

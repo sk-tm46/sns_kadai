@@ -16,19 +16,15 @@ header("Content-Security-Policy: reflected-xss block");
 <?php
 if(isset($_SESSION['member_login'])==false)
 {
-	$_SESSION['member_login']=1;
-	$_SESSION['member_name']='ゲスト';
-
-	print $_SESSION['member_name'];
-	print 'さん';
-	print '<a href="..\sns_login\sns_login.html"> ログイン </a><br/>';
+	print '<a href="..\sns_login\sns_login.html">ユーザー名またはパスワードが間違っています。</a><br/>';
+	exit();
 }
 else
 {
 	print $_SESSION['member_name'];
-	print 'さん';
-	print '<a href="sns_logout.php"> ログイン中</a><br/>';
+	print 'さんログイン中';
 } ?>
+<input type="button" onclick="location.href='sns_logout.php'" value="ログアウト">
 <?php
 try{
 $dsn = 'mysql:dbname=sns;host=localhost;charset=utf8';
@@ -61,6 +57,8 @@ while(true)
 	$rec = sanitize($rec);
 	$sns_post_no[$count] = $rec['no'];
 	$sns_post_date[$count] = $rec['date'];
+	$sns_post_replyno[$count] = $rec['replyno'];
+	$sns_post_user_id[$count] = $rec['user_id'];
 	$rec_comment=sanitize_br($rec['comment']);
 	$sns_post_comment[$count] = $rec_comment;
 	if($rec['image']=='')
@@ -77,40 +75,90 @@ while(true)
 }
 catch (Exception $e)
 {
-print  $e;
 	print 'ただいま障害により大変ご迷惑をお掛けしております。';
 	exit();
 }
 ?>
-TYS掲示板<br>
-コメント
+TYS掲示板<br/>
 <form method="post" enctype="multipart/form-data">
+コメント
 <textarea name="comment" rows="4" cols="50" wrap="hard"></textarea><br/>
-<input type="file" name="photo" id="sFiles" style"width:400px">
+<input type="file" name="photo" id="sFiles" style"width:400px"><br/>
+返信したいレス番を入力してください。
+<input type="text" name="replyno"><br/>
 <input type="submit" formaction="sns_post.php" name="svpost" value="投稿"><div id="photoMess"></div><br/>
 <?php if($sns_post_count == 0): ?>
 <?php else: ?>
 <table border="1" cellpadding="10">
+
 <?php
 for($i=0;$i<$sns_post_count;$i++)
 {
-$sns_kanma = ':';
-$sns_result = $sns_post_no[$i] . $sns_kanma . $sns_kanma . $sns_post_date[$i] ;
 ?>
 <tr>
-<td><div class="text"><?php print $sns_result; ?>
-<br/>
+<td><div class="text">
 <?php
+if($sns_post_replyno[$i] != 0)
+	{
+	$dsn = 'mysql:dbname=sns;host=localhost;charset=utf8';
+	$user = 'selectuser';
+	$password = '';
+	$dbh = new PDO($dsn, $user, $password);
+	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	$dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+	
+
+	$sql = 'SELECT user_id FROM mst_sns WHERE no = :no';
+	$stmt = $dbh->prepare($sql);
+	$stmt->bindValue(':no', $sns_post_replyno[$i], PDO::PARAM_INT);
+	$stmt->execute();
+	$replyid = $stmt->fetch(PDO::FETCH_ASSOC);
+	$replyuser_id = $replyid['user_id'];
+
+	$sql = 'SELECT name FROM mst_user WHERE user_id = :user_id';
+	$stmt = $dbh->prepare($sql);
+	$stmt->bindValue(':user_id', $replyuser_id, PDO::PARAM_INT);
+	$stmt->execute();
+	$replyname = $stmt->fetch(PDO::FETCH_ASSOC);
+	$replyname = $replyname['name'];
+	$dbh = null;
+	print $replyname;
+	print 'さんの投稿No';
+	print $sns_post_replyno[$i];
+	print 'へ返信です。<br/>';
+	}//if文終わり
+	
+	$dsn = 'mysql:dbname=sns;host=localhost;charset=utf8';
+	$user = 'selectuser';
+	$password = '';
+	$dbh = new PDO($dsn, $user, $password);
+	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	$dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+	$sql = 'SELECT name FROM mst_user WHERE user_id = :user_id';
+	$stmt = $dbh->prepare($sql);
+	$stmt->bindValue(':user_id', $sns_post_user_id[$i], PDO::PARAM_INT);
+	$stmt->execute();
+	$getuser = $stmt->fetch(PDO::FETCH_ASSOC);
+	$username = $getuser['name'];
+	$dbh = null;
+
+$sns_kanma = ':';
+$sns_result = $sns_post_no[$i] . $sns_kanma . $username. $sns_kanma . $sns_post_date[$i] ;
+
+print $sns_result;
+print '<br/>';
 print $sns_post_comment[$i];
-if($sns_post_image[$i] != "")
-{
-print $sns_post_image[$i];
-}
-?></div>
+	if($sns_post_image[$i] != "")
+	{
+	print $sns_post_image[$i];
+	}//if文終わり
+?>
+</div>
 </td>
 </tr>
-<?php 
-} ?>
+<?php
+}//for文終わり
+?>
 </table>
 <?php endif; ?>
 <input type="submit" formaction="sns_main.php" name="reload" value="最新を読み込む"><br/>

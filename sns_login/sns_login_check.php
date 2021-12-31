@@ -17,7 +17,7 @@ $dbh = new PDO($dsn,$user,$password);
 $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
-$sql='SELECT name FROM mst_user WHERE name=:name AND pass=:pass';
+$sql='SELECT user_id,name FROM mst_user WHERE name=:name AND pass=:pass';
 $stmt=$dbh->prepare($sql);
 $stmt->bindValue(':name', $sns_name, PDO::PARAM_STR);
 $stmt->bindValue(':pass', $sns_pass, PDO::PARAM_STR);
@@ -37,7 +37,7 @@ else
 {
 	ini_set("session.cookie_secure", 1);
 	session_start();
-	$_SESSION['member_login']=1;
+	$_SESSION['member_login']=$rec['user_id'];
 	$_SESSION['member_name']=$rec['name'];
 	header("X-XSS-Protection: 1; mode=block");
 	header("Content-Security-Policy: reflected-xss block");
