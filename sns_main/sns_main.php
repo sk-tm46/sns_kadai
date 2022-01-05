@@ -9,8 +9,8 @@ header("Content-Security-Policy: reflected-xss block");
 <html>
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="refresh" content="5">
 <title> ふれあい掲示板 </title>
-<link rel="stylesheet" href="popapp.css">
 </head>
 <body>
 <?php
@@ -22,9 +22,11 @@ if(isset($_SESSION['member_login'])==false)
 else
 {
 	print $_SESSION['member_name'];
-	print 'さんログイン中';
+	print 'さんログイン中<br/>';
 } ?>
 <input type="button" onclick="location.href='sns_logout.php'" value="ログアウト">
+<br/>
+<br/>
 <?php
 try{
 $dsn = 'mysql:dbname=sns;host=localhost;charset=utf8';
@@ -81,11 +83,11 @@ catch (Exception $e)
 ?>
 TYS掲示板<br/>
 <form method="post" enctype="multipart/form-data">
-コメント
+コメント<br/>
 <textarea name="comment" rows="4" cols="50" wrap="hard"></textarea><br/>
-<input type="file" name="photo" id="sFiles" style"width:400px"><br/>
-返信したいレス番を入力してください。
-<input type="text" name="replyno"><br/>
+<input type="file" name="photo" id="sFiles" style"width:400px"><br/><br/>
+返信したいレス番を入力してください。<br/>
+<input type="text" name="replyno"><br/><br/>
 <input type="submit" formaction="sns_post.php" name="svpost" value="投稿"><div id="photoMess"></div><br/>
 <?php if($sns_post_count == 0): ?>
 <?php else: ?>
@@ -161,6 +163,7 @@ print $sns_post_comment[$i];
 ?>
 </table>
 <?php endif; ?>
+<br/>
 <input type="submit" formaction="sns_main.php" name="reload" value="最新を読み込む"><br/>
 <script>
 function checkPhotoInfo()
