@@ -9,7 +9,7 @@ header("Content-Security-Policy: reflected-xss block");
 <html>
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="5">
+<meta http-equiv="refresh" content="300">
 <title> ふれあい掲示板 </title>
 </head>
 <body>
@@ -24,7 +24,10 @@ else
 	print $_SESSION['member_name'];
 	print 'さんログイン中<br/>';
 } ?>
-<input type="button" onclick="location.href='sns_logout.php'" value="ログアウト">
+<input type="button" onclick="location.href='sns_logout.php'" value="ログアウト"><br/>
+<?php print $_SESSION['member_name']; ?>
+さん
+<a href="..\sns_user\sns_prof.php">プロフィール画面へ</a><br/>
 <br/>
 <br/>
 <?php
@@ -100,7 +103,7 @@ for($i=0;$i<$sns_post_count;$i++)
 <tr>
 <td><div class="text">
 <?php
-if($sns_post_replyno[$i] != 0)
+	if($sns_post_replyno[$i] != 0)
 	{
 	$dsn = 'mysql:dbname=sns;host=localhost;charset=utf8';
 	$user = 'selectuser';
@@ -108,7 +111,6 @@ if($sns_post_replyno[$i] != 0)
 	$dbh = new PDO($dsn, $user, $password);
 	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	$dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-	
 
 	$sql = 'SELECT user_id FROM mst_sns WHERE no = :no';
 	$stmt = $dbh->prepare($sql);
@@ -130,19 +132,19 @@ if($sns_post_replyno[$i] != 0)
 	print 'へ返信です。<br/>';
 	}//if文終わり
 	
-	$dsn = 'mysql:dbname=sns;host=localhost;charset=utf8';
-	$user = 'selectuser';
-	$password = '';
-	$dbh = new PDO($dsn, $user, $password);
-	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	$dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-	$sql = 'SELECT name FROM mst_user WHERE user_id = :user_id';
-	$stmt = $dbh->prepare($sql);
-	$stmt->bindValue(':user_id', $sns_post_user_id[$i], PDO::PARAM_INT);
-	$stmt->execute();
-	$getuser = $stmt->fetch(PDO::FETCH_ASSOC);
-	$username = $getuser['name'];
-	$dbh = null;
+$dsn = 'mysql:dbname=sns;host=localhost;charset=utf8';
+$user = 'selectuser';
+$password = '';
+$dbh = new PDO($dsn, $user, $password);
+$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+$sql = 'SELECT name FROM mst_user WHERE user_id = :user_id';
+$stmt = $dbh->prepare($sql);
+$stmt->bindValue(':user_id', $sns_post_user_id[$i], PDO::PARAM_INT);
+$stmt->execute();
+$getuser = $stmt->fetch(PDO::FETCH_ASSOC);
+$username = $getuser['name'];
+$dbh = null;
 
 $sns_kanma = ':';
 $sns_result = $sns_post_no[$i] . $sns_kanma . $username. $sns_kanma . $sns_post_date[$i] ;
