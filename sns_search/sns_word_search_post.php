@@ -11,22 +11,23 @@ header("Content-Security-Policy: reflected-xss block");
 <title> ふれあい掲示板 </title>
 </head>
 <body>
-プロフィール<br/>
 <?php
-try
-{
+print $_SESSION['member_name'];
+print 'さんログイン中<br/>';
+?>
+<a href="..\sns_main\sns_logout.php">
+<input type="button" value="ログアウト"><br/><br/>
+</a>
+ワード検索結果<br/>
+検索ワード：
+<?php
 require_once('../common/common.php');
+$post = sanitize($_POST);
+$word = $post['word'];
+print $word;
+print '<br/>';
 
-$prof_id = $_SESSION['member_login'];
-
-//コメント検索から詳細を開いた場合
-if(isset($_POST['prof_id']))
-{
-	$post = sanitize($_POST);
-	$prof_id = $post['prof_id'];
-}
-
-//ユーザーの情報取得
+try{
 $dsn = 'mysql:dbname=sns;host=localhost;charset=utf8';
 $user = 'selectuser';
 $password = '';
@@ -34,49 +35,37 @@ $dbh = new PDO($dsn, $user, $password);
 $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
-$sql = 'SELECT name,comment FROM mst_user WHERE user_id=:user_id';
+$sql = 'SELECT * FROM mst_sns WHERE comment LIKE :word';
 $stmt = $dbh->prepare($sql);
-$stmt->bindValue(':user_id', $prof_id, PDO::PARAM_INT);
+$stmt->bindValue(':word', '%'. $word .'%', PDO::PARAM_STR);
 $stmt->execute();
-
-$rec = $stmt->fetch(PDO::FETCH_ASSOC);
-
-$sql = 'SELECT * FROM mst_sns WHERE user_id=:user_id';
-$stmt = $dbh->prepare($sql);
-$stmt->bindValue(':user_id', $prof_id, PDO::PARAM_INT);
-$stmt->execute();
-
-
 
 $dbh = null;
 $count = 0;
 
 while(true)
 {
-	$rec2 = $stmt->fetch(PDO::FETCH_ASSOC);
-	if($rec2==false)
+	$rec = $stmt->fetch(PDO::FETCH_ASSOC);
+	if($rec==false)
 	{
 		break;
 	}
-	$rec2 = sanitize($rec2);
-	$sns_post_no[$count] = $rec2['no'];
-	$sns_post_date[$count] = $rec2['date'];
-	$sns_post_user_id[$count] = $rec2['user_id'];
-	$rec2_comment=sanitize_br($rec2['comment']);
-	$sns_post_comment[$count] = $rec2_comment;
-	if($rec2['image']=='')
+	$rec = sanitize($rec);
+	$sns_post_no[$count] = $rec['no'];
+	$sns_post_date[$count] = $rec['date'];
+	$sns_post_user_id[$count] = $rec['user_id'];
+	$rec_comment=sanitize_br($rec['comment']);
+	$sns_post_comment[$count] = $rec_comment;
+	if($rec['image']=='')
 	{
 		$sns_post_image[$count]='';
 	}
 	else
 	{
-		$sns_post_image[$count]='<img src="gazou/'.$rec2['image'].'" width="400" height="250">';
+		$sns_post_image[$count]='<img src="gazou/'.$rec['image'].'" width="400" height="250">';
 	}
 	$count = $count + 1;
 }
-
-print $_SESSION['member_name'];
-print 'さんログイン中<br/>';
 }
 catch (Exception $e)
 {
@@ -84,39 +73,19 @@ catch (Exception $e)
 	exit();
 }
 ?>
-<a href="..\sns_main\sns_logout.php">
-<input type="button" value="ログアウト"><br/><br/>
-</a>
-ユーザー名<br/>
-<?php
-$rec = sanitize($rec);
-$user_name = $rec['name'];
-$user_comment = $rec['comment'];
-
-print $user_name;
-print '<br/><br/>';
-?>
-自己紹介<br/>
-<?php
-print $user_comment;
-print '<br/> ';
-?>
-<input type="button" onclick="location.href='sns_prof_edit.php'" value="編集"><br/><br/>
-投稿<br/>
 <?php if($count == 0): ?>
 <?php else: ?>
 <table border="1" cellpadding="10">
 <?php
+$dsn = 'mysql:dbname=sns;host=localhost;charset=utf8';
+$user = 'selectuser';
+$password = '';
 for($i=0;$i<$count;$i++)
 {
 ?>
 <tr>
 <td><div class="text">
 <?php
-//名前取得する
-$dsn = 'mysql:dbname=sns;host=localhost;charset=utf8';
-$user = 'selectuser';
-$password = '';
 $dbh = new PDO($dsn, $user, $password);
 $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
@@ -130,6 +99,7 @@ $dbh = null;
 
 $sns_kanma = ':';
 $sns_result = $sns_post_no[$i] . $sns_kanma . $username. $sns_kanma . $sns_post_date[$i];
+$prof_id = $sns_post_user_id[$i];
 print $sns_result;
 print '<br/>';
 print $sns_post_comment[$i];
@@ -138,6 +108,10 @@ print $sns_post_comment[$i];
 	print $sns_post_image[$i];
 	}//if文終わり
 ?>
+<form action ="..\sns_user\sns_prof.php" method ="post">
+<input type ="hidden" name = "prof_id" value ="<?=$prof_id?>">
+<input type ="submit" name ="submit" value ="詳細">
+</form>
 </div>
 </td>
 </tr>
@@ -146,7 +120,7 @@ print $sns_post_comment[$i];
 ?>
 </table>
 <?php endif; ?>
-
-<a href="..\sns_main\sns_main.php">メイン画面へ</a>
+<input type="button" onclick="history.back()" value="戻る"><br/>
+<a href="..\sns_main\sns_main.php">メイン画面へ戻る</a>
 </body>
 </html>

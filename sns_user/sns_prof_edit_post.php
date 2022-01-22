@@ -45,7 +45,6 @@ header( "Location: sns_prof.php");
 }
 catch (Exception $e)
 {
-	print $e;
 	print 'ただいま障害により大変ご迷惑をお掛けしております。';
 	exit();
 }
