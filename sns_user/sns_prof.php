@@ -46,8 +46,6 @@ $stmt = $dbh->prepare($sql);
 $stmt->bindValue(':user_id', $prof_id, PDO::PARAM_INT);
 $stmt->execute();
 
-
-
 $dbh = null;
 $count = 0;
 
@@ -100,8 +98,21 @@ print '<br/><br/>';
 <?php
 print $user_comment;
 print '<br/> ';
+
+if($prof_id == $_SESSION['member_login'])
+{
+	print '<input type="button" onclick="location.href=\'sns_prof_edit.php\'" value="編集"><br/><br/>';
+}
+else
+{
 ?>
-<input type="button" onclick="location.href='sns_prof_edit.php'" value="編集"><br/><br/>
+	<form action ="sns_follower_check.php" method ="post">
+	<input type ="hidden" name = "prof_id" value ="<?=$prof_id?>">
+	<input type ="submit" name ="submit" value ="フォロー">
+	</form>
+<?php
+}
+?>
 投稿<br/>
 <?php if($count == 0): ?>
 <?php else: ?>

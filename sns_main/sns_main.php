@@ -93,6 +93,7 @@ TYS掲示板<br/>
 <input type="text" name="replyno"><br/><br/>
 <input type="submit" formaction="sns_post.php" name="svpost" value="投稿"><div id="photoMess"></div><br/>
 <input type="button" onclick="location.href='../sns_search/sns_word_search.php'" value="投稿検索">
+　<input type="button" onclick="location.href='../sns_search/sns_prof_search.php'" value="プロフィール検索">
 <?php if($sns_post_count == 0): ?>
 <?php else: ?>
 <table border="1" cellpadding="10">
