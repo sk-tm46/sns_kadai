@@ -39,11 +39,36 @@ $dbh = new PDO($dsn, $user, $password);
 $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
-$sql = 'SELECT * FROM mst_sns WHERE :num LIMIT :no';
+//TLに表示するフォロワーを取得
+$sql = 'SELECT follow_id FROM mst_follow WHERE user_id = :user_id';
+$user_id = $_SESSION['member_login'];
 $stmt = $dbh->prepare($sql);
-$stmt->bindValue(':num', 1, PDO::PARAM_INT);
-$stmt->bindValue(':no', 50, PDO::PARAM_INT);
+$stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
 $stmt->execute();
+//フォロワーがいない場合
+$cnt = 0;
+while(true)
+{
+	$rec = $stmt->fetch(PDO::FETCH_ASSOC);
+	if($rec==false)
+	{		
+		break;
+	}
+	$follow_id[$cnt] = $rec['follow_id'];
+	//フォロワーがいる場合
+	$cnt = $cnt + 1;
+}
+//自分を追加
+$follow_id[$cnt] = $user_id;
+
+//ツイートを取得
+$sql = 'SELECT * FROM mst_sns WHERE user_id in (';
+$sql.=substr(str_repeat(',?',count($follow_id)),1);
+$limit = ') LIMIT 50';
+$sql.= $limit;
+$stmt = $dbh->prepare($sql);
+//$stmt->bindValue(':no', 50, PDO::PARAM_INT);
+$stmt->execute($follow_id);
 
 $dbh = null;
 
@@ -80,6 +105,8 @@ while(true)
 }
 catch (Exception $e)
 {
+print $sql;
+print $e;
 	print 'ただいま障害により大変ご迷惑をお掛けしております。';
 	exit();
 }
