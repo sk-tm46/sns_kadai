@@ -29,7 +29,6 @@ else
 さん
 <a href="..\sns_user\sns_prof.php">プロフィール画面へ</a><br/>
 <br/>
-<br/>
 <?php
 try{
 $dsn = 'mysql:dbname=sns;host=localhost;charset=utf8';
@@ -105,20 +104,12 @@ while(true)
 }
 catch (Exception $e)
 {
-print $sql;
-print $e;
 	print 'ただいま障害により大変ご迷惑をお掛けしております。';
 	exit();
 }
 ?>
 TYS掲示板<br/>
-<form method="post" enctype="multipart/form-data">
-コメント<br/>
-<textarea name="comment" rows="4" cols="50" wrap="hard"></textarea><br/>
-<input type="file" name="photo" id="sFiles" style"width:400px"><br/><br/>
-返信したいレス番を入力してください。<br/>
-<input type="text" name="replyno"><br/><br/>
-<input type="submit" formaction="sns_post.php" name="svpost" value="投稿"><div id="photoMess"></div><br/>
+<input type="button" onclick="location.href='sns_input.php'" value="投稿画面へ"><br/><br/>
 <input type="button" onclick="location.href='../sns_search/sns_word_search.php'" value="投稿検索">
 　<input type="button" onclick="location.href='../sns_search/sns_prof_search.php'" value="プロフィール検索">
 <?php if($sns_post_count == 0): ?>
@@ -196,24 +187,5 @@ print $sns_post_comment[$i];
 <?php endif; ?>
 <br/>
 <input type="submit" formaction="sns_main.php" name="reload" value="最新を読み込む"><br/>
-<script>
-function checkPhotoInfo()
-{
-//ファイルサイズ取得
-var fileList = document.getElementById("sFiles").files;
-var list = "";
-for(var i=0; i<fileList.length; i++){
-list += "[" + fileList[i].size + " bytes]" + fileList[i].name + "<br/>";
-}
-if(list != null){
-	if( list > 1000000)
-	{
-	document.getElementById("photoMess").innerText = "画像が大き過ぎます。";
-	return false;
-	}
-}
-}
-</script>
-</form>
 </body>
 </html>
