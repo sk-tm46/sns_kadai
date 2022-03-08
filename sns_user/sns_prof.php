@@ -41,7 +41,7 @@ $stmt->execute();
 
 $rec = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$sql = 'SELECT * FROM mst_sns WHERE user_id=:user_id';
+$sql = 'SELECT * FROM mst_sns WHERE user_id=:user_id ORDER BY no DESC';
 $stmt = $dbh->prepare($sql);
 $stmt->bindValue(':user_id', $prof_id, PDO::PARAM_INT);
 $stmt->execute();
@@ -68,7 +68,7 @@ while(true)
 	}
 	else
 	{
-		$sns_post_image[$count]='<img src="gazou/'.$rec2['image'].'" width="400" height="250">';
+		$sns_post_image[$count]='<img src="../sns_main/gazou/'.$rec2['image'].'" width="400" height="250">';
 	}
 	$count = $count + 1;
 }

@@ -9,7 +9,7 @@ header("Content-Security-Policy: reflected-xss block");
 <html>
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="300">
+<meta http-equiv="refresh" content="30">
 <title> ふれあい掲示板 </title>
 </head>
 <body>
@@ -63,10 +63,9 @@ $follow_id[$cnt] = $user_id;
 //ツイートを取得
 $sql = 'SELECT * FROM mst_sns WHERE user_id in (';
 $sql.=substr(str_repeat(',?',count($follow_id)),1);
-$limit = ') LIMIT 50';
+$limit = ') ORDER BY no DESC LIMIT 50';
 $sql.= $limit;
 $stmt = $dbh->prepare($sql);
-//$stmt->bindValue(':no', 50, PDO::PARAM_INT);
 $stmt->execute($follow_id);
 
 $dbh = null;

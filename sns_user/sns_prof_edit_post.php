@@ -14,12 +14,27 @@ $user_id =$user['member_login'];
 //名前の変更がない場合は同じ名前を入れる
 if($_POST['name'] == null)
 {
-	$_POST['name'] = ($_SESSION['member_name']);
+	$_POST['name'] = $_SESSION['member_name'];
+}
+else
+{
+	//更新がある場合セッションを更新する
+	$_SESSION['member_name'] = $_POST['name'];
+}
+//自己紹介に変更がない場合は同じ自己紹介文を入れる
+if($_POST['introduction'] == null)
+{
+	$_POST['introduction'] = $_SESSION['member_introduction'];
+}
+else
+{
+	//更新がある場合セッションを更新する
+	$_SESSION['member_introduction'] = $_POST['introduction'];
 }
 
 $post = sanitize($_POST);
 $name = $post['name'];
-$comment= $post['comment'];
+$comment = $post['introduction'];
 
 $dsn = 'mysql:dbname=sns;host=localhost;charset=utf8';
 $user = 'updateuser';

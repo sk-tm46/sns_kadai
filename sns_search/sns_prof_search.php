@@ -20,13 +20,34 @@ print 'さんログイン中<br/>';
 </a>
 プロフィール検索<br/>
 検索したいユーザー名を入力してください。
+<br/><div id="rename"></div>
 <br/>
-<br/>
-<form method="post" action="sns_prof_search_post.php">
+<form method="post" name="user_search" action="sns_prof_search_post.php" onsubmit="return checkSearchInfo()">
 <input type="text" size="40" name="name" ><br/>
 <input type="submit" value="検索"><br/><br/>
 
 <a href="..\sns_main\sns_main.php">メイン画面へ戻る</a>
+
+<script>
+function checkSearchInfo()
+{
+	var name = document.user_search.name.value;
+	var name_len = name.length;
+
+if(name_len >= 31)
+{
+	document.getElementById("rename").innerText = "30字以内で入力してください。";
+	return false;
+}
+else if(name.length != Array.from(name).length)
+{
+	document.getElementById("rename").innerText = "不正な値が入力されています。";
+	return false;
+}
+
+}
+</script>
+
 </form>
 </body>
 </html>

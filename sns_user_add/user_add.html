@@ -54,7 +54,7 @@ else if(pass1_len >= 16)
 	document.getElementById("repass1").innerText = "パスワードは15文字以内で入力してください。";
 	return false;
 }
-else if(pass1.match(/^[A-Za-z0-9]*$/) == false)
+else if(pass1.match(/^[A-Za-z0-9]*$/) === false)
 {
 	document.getElementById("repass1").innerText = "パスワードは半角英数字で入力してください。";
 	return false;

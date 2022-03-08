@@ -29,7 +29,6 @@ $rec = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if($rec==false)
 {
-print $sns_pass;
 	print 'ユーザー名またはパスワードが間違っています。<br />';
 	print '<a href="sns_login.html">戻る</a>';
 }

@@ -20,13 +20,29 @@ print 'さんログイン中<br/>';
 </a>
 ワード検索<br/>
 検索したいワードを入力してください。
+<br/><div id="reword"></div>
 <br/>
-<br/>
-<form method="post" action="sns_word_search_post.php">
+<form method="post" name="word_search" action="sns_word_search_post.php" onsubmit="return checkSearchInfo()">
 <textarea name="word" rows="6" cols="70" wrap="hard"></textarea><br/>
 <input type="submit" value="検索"><br/><br/>
 
 <a href="..\sns_main\sns_main.php">メイン画面へ戻る</a>
+
+<script>
+function checkSearchInfo()
+{
+	var word = document.word_search.word.value;
+	var word_len = word.length;
+
+if(word_len >= 257)
+{
+	document.getElementById("reword").innerText = "256字以内で入力してください。";
+	return false;
+}
+
+}
+</script>
+
 </form>
 </body>
 </html>
